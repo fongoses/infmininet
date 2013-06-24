@@ -4,7 +4,7 @@ TOPOLOGIA 1
 
 Topologia em Grafo
 
-Configuração:
+Configuracao:
 * 27 switches conectados em um Grafo
 * 2 hosts por switch
 
