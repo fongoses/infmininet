@@ -173,4 +173,4 @@ class Topologia2(Topo):
         self.addLink(s33, hb33)
 
 
-topos = { 'topologia2': ( lambda: Topologia2() ) }
+topos = { 'topologia2': (lambda: Topologia2()) }
