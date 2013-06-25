@@ -5,7 +5,7 @@ TOPOLOGIA 2
 Topologia em Arvore
 
 Configuracao:
-* 13 switches conectados em árvore
+* 13 switches conectados em arvore
 * 2 hosts por switch
 
 * Topologia
