@@ -5,7 +5,7 @@ TOPOLOGIA 2
 Topologia em Arvore
 
 Configuracao:
-* 13 switches conectados em árvore
+* 13 switches conectados em arvore
 * 2 hosts por switch
 
 * Topologia
@@ -67,8 +67,8 @@ class Topologia2(Topo):
 
         # Add hosts
         ha0 = self.addHost('ha0')
+	#ha0.setIP('224.0.0.1')
         hb0 = self.addHost('hb0')
-
         ha1 = self.addHost('ha1')
         hb1 = self.addHost('hb1')
 
@@ -112,8 +112,8 @@ class Topologia2(Topo):
         self.addLink(s0, s1)
         self.addLink(s0, s2)
         self.addLink(s0, s3)
-        self.addLink(s0, ha0)
-        self.addLink(s0, hb0)
+        self.addLink(s0,ha0)
+        self.addLink(s0,hb0)
 
         # s1
         self.addLink(s1, s11)
