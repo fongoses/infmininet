@@ -3,17 +3,58 @@ from pox.lib.addresses import EthAddr, IPAddr
 from pox.lib.util import dpid_to_str 
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt # POX convention
+import l2_learning
 log = core.getLogger()
+tabelaMulticast = 0
+
+
+#A cada pacote recebido, realiza o roteamento 
+class RoteadorMulticast(object): 
+  
+    
+    def __init__ (self,connection):
+        #connection representa o switch sobre o qual serah criado o controle multicast
+        core.openflow.addListeners(self)
+     
+        #Tabela de Ips Multicast
+        self.tabelaMulticast = {}
+
+        #adiciona Listener (essa propria classe)  sobre a conexao.
+        #O listener serah disparado a cada novo pacote
+        connection.addListeners(self)
+      
+    #As acoes do listener sao descritas atraves do metodo definido na interface
+    #para tratamento de pacotes de entrada. Esse metodo eh o descrito abaixo:
+    #_handle_PacketIn
+    def _handle_PacketIn(self,event):
+   
+        packet=event.parsed #obtem pacote 
+       
+        #Registra pacote atual no grupo
+        def registraNoGrupo(Packet,Grupo): 
+            #Faz um match, testando se a porta eh 554
+
+            #se deu match, registra ip de origem na tabela multicast
+            #formato da tabela: 
+            #   ---------------------------------------
+            #   |IP_DO_HOST | IDENTIFICADOR/IP_DO_GRUPO|
+            #   ----------------------------------------
+            self.tabelaMulticast[Packet.src] == Grupo #nessa nossa implementacao ha apenas o grupo identificado por 1
+
+        def encaminhaPacote(Packet,Grupo):
+            #Grupo
+            #for ip in self.tabelaMulticast
+            #    pacoteMulticast = of.ofp_packet_out() #evento para encaminhamento de pacote
+                
+               
+
+
  
-class MyComponent (object):
-  def __init__ (self):
-    core.openflow.addListeners(self)
- 
+  #Cria regra 
   #cria e envia um pacote 'msg' (mensagem OpenFlow) que configura uma entrada na tabela  de um determinado switch.
   #Essa entrada sera responsavel em rotear determinados tipos de pacotes que elas especificam
   #A mensagem openflow atinge todos os switches, e eh enviada atraves do metodo connection.send(..) 
-  def send_meu_pacoteip(self,event):
-    
+  def send_meu_pacoteip(self,event):    
       # Traffic to 192.168.101.101:80 should be sent out switch port 4    
       self.porta=of.OFPP_FLOOD
       #self.porta=4
@@ -27,7 +68,8 @@ class MyComponent (object):
       msg.actions.append(of.ofp_action_output(port=self.porta)) #dados do ip/porta em questao serao encaminhados na(s) porta(s) 'port'
       event.connection.send(msg) #envia mensagem openflow para todos os switches
       print "Mensagem OFP enviada"
-    
+  
+  
   #semelhante ao metodo anterior, porem trabalho com endereco mac 
   def send_meu_pacote_eth(self,event):
       #self.porta=4
@@ -42,15 +84,41 @@ class MyComponent (object):
       event.connection.send(msg) #envia mensagem openflow para todos os switches
       print "Mensagem OFP enviada"
 
+  #semelhante ao metodo anterior, porem trabalho com endereco mac 
+  def group_subscribe(self,event):
+      #self.porta=4
+      self.porta=of.OFPP_FLOOD
+      self.TCPPort = 554 
+      # One thing at a time...
+      match = of.ofp_match() #mensagem flow_mod especifica alteracao na tabela de um switch
+      match.tp_dst = self.TCPPort
+      msg.actions.append(of.ofp_action_output(port=self.porta)) #dados do ip/porta em questao serao encaminhados na(s) porta(s) 'port'
+      event.connection.send(msg) #envia mensagem openflow para todos os switches
+      print "Mensagem OFP enviada"
 
+  def match_group_table(self,event):
+     print "consulta a tabela de roteamento multicast"
 
-  def _handle_ConnectionUp (self, event):
-    print 'Switch '+dpid_to_str(event.dpid)+' Conectado' 
-    log.debug("Switch %s has come up.", dpid_to_str(event.dpid))
-    self.send_meu_pacote_eth(event)
-def launch ():
-  core.registerNew(MyComponent)
   
+  
+class RTSPMulticast(object):
+    
+    def _handle_ConnectionUp (self, event):
+        self.PID = dpid_to_str(event.dpid)
+        print 'Switch '+self.PID+' Conectado' 
+        log.debug("Switch %s has come up.", self.PID)
+        
+        if(self.PID == '00:00:00:00:00:01')
+            RoteadorMulticast(event.connection)
+        else
+            LearningSwitch(event.connection,transparent=false)
+        #self.send_meu_pacote_eth(event)
+        
+
+
+def launch ():
+  core.registerNew(RTSPMulticast)
+  RTSPMulticast() 
 
 
 
