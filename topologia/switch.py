@@ -23,13 +23,15 @@ class Switch( Topo ):
         host1 = self.addHost( 'h1' )
         host2 = self.addHost( 'h2' )
         host3 = self.addHost( 'h3' )
-	switch1 = self.addSwitch( 's1' )
-	switch2 = self.addSwitch( 's2')
+        host4 = self.addHost( 'h4' )
+        switch1 = self.addSwitch( 's1' ) #s1 gera dpid1, s2 gera dpid2, etc
+        switch2 = self.addSwitch( 's2')
        
-	 # Add links
+	    # Add links
         self.addLink( host1, switch1 )
         self.addLink( host2, switch1 )
         self.addLink( host3, switch2 )	
+        self.addLink( host4, switch2 )	
         self.addLink( switch1, switch2 )	
 
 topos = { 'switch': ( lambda: Switch() ) }

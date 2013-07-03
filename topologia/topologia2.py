@@ -50,10 +50,9 @@ class Topologia2(Topo):
         s0 = self.addSwitch('s0')
 
 
-        s1 = self.addSwitch('s1')
+        s1 = self.addSwitch('s1') #s1 gera dpid 1, s2 gera dpid2, etc.
         s2 = self.addSwitch('s2')
         s3 = self.addSwitch('s3')
-
         s11 = self.addSwitch('s11')
         s12 = self.addSwitch('s12')
         s13 = self.addSwitch('s13')

@@ -4,6 +4,7 @@ from pox.lib.util import dpid_to_str
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt # POX convention
 import pox.openflow.l2_learning as l2
+import pox.openflow.spanning_tree as spat
 log = core.getLogger()
 
 #A cada pacote recebido, realiza o roteamento 
@@ -49,9 +50,12 @@ class RTSPMulticast(object):
    
     def __init__(self):
         core.openflow.addListeners(self) #a propria classe que implementa eh um listener que trabalha com a interface _handle_ConnectionUp
-         
+        
+    
+     
     def _handle_ConnectionUp (self, event):
         self.DPID = dpid_to_str(event.dpid)
+        #print dir(self)
         log.debug("Switch %s has come up.", self.DPID)
         if(self.DPID == "00-00-00-00-00-01"):
             RoteadorMulticast(event.connection)            
@@ -59,17 +63,12 @@ class RTSPMulticast(object):
         else:
             l2.LearningSwitch(event.connection,transparent=False)
             print 'Switch l2 [ '+self.DPID+' ] Conectado'
-        #self.send_meu_pacote_eth(event)
-
 
 
 def launch ():
     core.registerNew(RTSPMulticast)
-
-
-
-
-
-
+    spat.launch() #launch spanning tree module
+    tree = spat._calc_spanning_tree()
+    print dir(tree)
 
 
