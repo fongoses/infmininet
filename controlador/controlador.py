@@ -5,6 +5,7 @@ import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt # POX convention
 import pox.openflow.l2_learning as l2
 import pox.openflow.spanning_tree as spat
+import pox.openflow.discovery as dscv
 log = core.getLogger()
 
 #A cada pacote recebido, realiza o roteamento 
@@ -67,6 +68,7 @@ class RTSPMulticast(object):
 
 def launch ():
     core.registerNew(RTSPMulticast)
+    dscv.launch()
     spat.launch() #launch spanning tree module
     tree = spat._calc_spanning_tree()
     print dir(tree)
